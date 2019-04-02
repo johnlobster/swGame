@@ -51,3 +51,16 @@ body {
 .swGameCard:hover {
     border-color:greenyellow;
 }
+
+.swHero {
+    border-color:greenyellow;
+    float:none;
+}
+
+.swEnemy {
+    border-color:transparent; 
+}
+
+.swEnemy:hover {
+    border-color: red;
+}
