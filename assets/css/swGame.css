@@ -1,0 +1,53 @@
+/* Css to support star wars game 
+John Webster */
+
+body {
+    background-image: url(../images/background.jpg);
+    background-repeat: repeat;
+}
+
+#myJumbotron {
+    background:transparent;
+    padding: 10px 0 10px 0;
+}
+
+#jumbotronBox {
+    background: lightgray;
+    text-align:center;
+}
+
+#swLogo {
+    height:150px;
+}
+
+/* #instructionsButton {
+    
+} */
+
+#swTitle {
+    float: left;
+    
+}
+
+#gameSelection, #selectEnemy {
+    background-color: lightgray;
+    border-radius:10px;
+}
+
+.swGamePhoto {
+    width: 150px;
+}
+
+.swGameCard {
+    width: 150px;
+    float:left;
+    border-color:transparent;
+    border-width:4px;
+    border-style:solid;
+    border-radius: 4px;
+    margin: 0 5px 0 5px;
+}
+
+.swGameCard:hover {
+    border-color:greenyellow;
+}
