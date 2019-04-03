@@ -29,11 +29,13 @@ body {
     
 }
 
-#gameSelection, #selectEnemy {
+
+.swInstruction {
     background-color: lightgray;
     border-radius:10px;
-}
+    padding: 2px 10px 2px 5px;
 
+}
 .swGamePhoto {
     width: 150px;
 }
