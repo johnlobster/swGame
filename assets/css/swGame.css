@@ -38,6 +38,7 @@ body {
 }
 .swGamePhoto {
     width: 150px;
+    padding 0;
 }
 
 .swGameCard {
