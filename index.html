@@ -51,7 +51,7 @@
     <div id="gameSelection">
         <h3 class="mb-5 swInstruction"> Click on picture to select your hero</h3>
         <div>
-            <button id="luke" class="card swGameCard">
+            <button id="luke" class="card swGameCard swGameHeroSelect">
                 <img src="assets/images/luke.jpg" class="card-image-top swGamePhoto" alt="Luke">
                 <h5 class="card-title">Luke Skywalker</h5>
                 <p class="card-text">
@@ -59,15 +59,15 @@
                 </p>
             </button>
 
-            <button id="obiwan" class="card swGameCard">
+            <button id="obiwan" class="card swGameCard swGameHeroSelect">
                 <img src="assets/images/obi-wan-kenobi.jpg" class="card-image-top swGamePhoto" alt="Obi wan">
-                <h5 class="card-title">Obi wan kenobi.jpg</h5>
+                <h5 class="card-title">Obi wan kenobi</h5>
                 <p class="card-text">
                         HP: 150
                 </p>
             </button>
 
-            <button id="vader" class="card swGameCard">
+            <button id="vader" class="card swGameCard swGameHeroSelect">
                 <img src="assets/images/darth-vader.jpg" class="card-image-top swGamePhoto" alt="Vader">
                 <h5 class="card-title">Darth Vader</h5>
                 <p class="card-text">
@@ -75,7 +75,7 @@
                 </p>
             </button> 
             
-            <button id="maul" class="card swGameCard">
+            <button id="maul" class="card swGameCard swGameHeroSelect">
                     <img src="assets/images/darthMaul.jpg" class="card-image-top swGamePhoto" alt="Maul">
                     <h5 class="card-title">Darth Maul</h5>
                     <p class="card-text">
@@ -109,11 +109,12 @@
                             <img src="assets/images/lightSabers.jpg" alt="light sabers" id="swFight" style="width:150px" >
                         </button>
                     </div>
-                    <div id="fightText" class="row">
+                    <div id="fightText" class="row swInstruction">
 
                     </div>
-                    <div class=row>
-                        <button id="restartButton" class="btn btn-primary">Start again</button>
+                    <div class="row"  >
+                        <button id="restartButton" class="btn btn-primary"  >Start again</button>
+                        <button id="nextEnemyButton" class="btn btn-primary"  >Next Enemy</button>
                     </div>
                     
                 </div>

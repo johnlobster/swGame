@@ -2,26 +2,71 @@
 // John Webster
 
 $(document).ready(function(){
-// set up Instructions button - it's a bootstrap "modal"
+
+// object containing data values for fighting
+
+var fightObj = {
+    luke: { 
+        healthPoints: 150, 
+        originalHealthPoints: 150,
+        attackPower : 10,
+        attackPowerIncrementor: 4,
+        originalAttackPower: 10,
+        counterAttackPower: 10
+    },
+    obiwan: { 
+        healthPoints: 150, 
+        originalHealthPoints: 150,
+        attackPower : 10,
+        attackPowerIncrementor: 4,
+        originalAttckPower: 10,
+        counterAttackPower: 10
+    },
+    vader: { 
+        healthPoints: 150, 
+        originalHealthPoints: 150,
+        attackPower : 10,
+        attackPowerIncrementor: 4,
+        originalAttackPower: 10,
+        counterAttackPower: 10
+    },
+    maul: { 
+        healthPoints: 150,
+        originalHealthPoints: 150, 
+        attackPower : 10,
+        attackPowerIncrementor: 4,
+        originalAttackPower: 10,
+        counterAttackPower: 10
+    }
+}
 
 // Global variables
-gameSelectionPhase = true;
-selectEnemyPhase = false;
-playGamePhase = false;
+var gameSelectionPhase = true;
+var selectEnemyPhase = false;
+var playGamePhase = false;
+var fightPhase = false;
 
-gamesWon = 0;
-gamesLost = 0;
+var gamesWon = 0;
+var gamesLost = 0;
 
-heroSelected = "";
-enemySelected = "";
-
-
-// Select the hero (visible by default)
+var heroSelected = "";
+var enemySelected = "";
 
 
+// functions
+function resetFightObj () {
+    for (var i in fightObj) {
+         if (fightObj.hasOwnProperty(i)) {   
+            i.healthPoints = i.originalHealthPoints;
+            i.attackPower = i.originalAttackPower;
+        }
+    }
+}
+
+resetFightObj();
 
 
-// copy the cards and insert into hidden parts of the html
+// copy the cards and insert into hidden parts of the html, rather than duplicating html by hand
 // add all into enemy and hero, will use visibility to select
 $(".swGameCard").each( function(i, e){
     var enemyCard = $(e).clone();
@@ -39,7 +84,7 @@ $(".swGameCard").each( function(i, e){
     $("#heroColumn").append(heroCard);
 });
 
-// event listener - look at all buttons
+// event listener - look at all buttons, even if some not visible yet
 $("button").on("click", function (){
     var cardSelected = this.id;
     console.log("Selected " + cardSelected + " " + typeof(cardSelected));
@@ -50,7 +95,7 @@ $("button").on("click", function (){
         return;
     }
     if ( gameSelectionPhase) {
-        $(".swGameCard").each( function(i, e){
+        $(".swGameHeroSelect").each( function(i, e){
              // if ( $(e).attr("id") !== cardSelected) {
              
             //     $(e).animate( {opacity:0.8}, "slow");
@@ -67,14 +112,20 @@ $("button").on("click", function (){
         $("#gameSelection").hide();
         $("#selectEnemy").show(); // display
         // Now hide the cards other than the hero card
-        $(".swHeroPlay").each( function(i, e){
-             if ( $(e).attr("id") !== cardSelected) {
+        $(".swHero").each( function(i, e){
+            if ( $(e).attr("id") !== cardSelected) {
                 $(e).hide();
             }
+            else {
+                $(e).show();
+            }
         });
-        $(".swEnemyPlay").each( function(i, e){
-             if ( $(e).attr("id") == cardSelected) {
+        $(".swEnemy").each( function(i, e){
+            if ( $(e).attr("id") == cardSelected) {
                 $(e).hide();
+            }
+            else {
+                $(e).show();
             }
             
         });
@@ -86,94 +137,87 @@ $("button").on("click", function (){
         $("#gamePlay").show();
         selectEnemyPhase = false;
         playGamePhase = true;
+        $("#nextEnemyButton").hide();
         // in the hero column, hide the unselected
-        $(".swHeroColumn").each( function(i, e){
+        $(".swHeroPlay").each( function(i, e){
             console.log( "Hero column " + typeof(e) + " " + e);
-            if ( e !== heroSelected) {
+            if ( $(e).attr("id") !== heroSelected) {
                $(e).hide();
-           }
+            }
+            else {
+                $(e).show();
+            }
        });
-       // in the enemy column, hide the
-       $(".swHeroColumn").each( function(i, e){
-            if ( e !== enemySelected) {
+       // in the enemy column, hide the unsselected
+       $(".swEnemyPlay").each( function(i, e){
+            if ( $(e).attr("id") !== enemySelected) {
                 $(e).hide();
+            }
+            else {
+                $(e).show();
             }
         });
    
+    } else if (playGamePhase) {
+        if ( cardSelected === "nextEnemyButton") {
+            playGamePhase = false;
+            selectEnemyPhase = true;
+            $("#gamePlay").hide();
+            $("#selectEnemy").show();
+        }
+        else if( cardSelected === "fightButton") {
+            // hide the start again button and nextEnemy button
+            $("#startAgainButton").show();
+            $("#nextEnemyButton").hide();
+            // fight calculations
+            fightObj[heroSelected].healthPoints -= fightObj[enemySelected].counterAttackPower;
+            fightObj[enemySelected].healthPoints -= fightObj[heroSelected].attackPower;
+            fightObj[heroSelected].attackPower += fightObj[heroSelected].attackPowerIncrementor;
+            // update text
+            $("#fightText").empty();
+            $("#fightText").text( "You attacked " + enemySelected + " causing " + 
+                fightObj[heroSelected].attackPower+ " damage. "+ enemySelected + " attacked you causing " +
+                fightObj[enemySelected].counterAttackPower + " damage.");
+            // determine win/lose
+            if (fightObj[heroSelected].healthPoints < 0 ) {
+                // hero is defeated
+                gamesLost += 1;
+                $("#fightText").text( "You died !!");
+                $("#startAgainButton").show();
+            }
+            else if (fightObj[enemySelected].healthPoints < 0) {
+                // enemy defeated, move on to next one
+                $("#fightText").empty();
+                $("#fightText").text( "You defeated " + enemySelected + " !!");
+                $("#nextEnemyButton").show();
+            }
+            // update displays
+            // hit points on cards
+            var jqueryString = "#" + heroSelected + ".swHeroPlay";
+            $(jqueryString).find( "p").empty();
+            $(jqueryString).find( "p").text("HP: "+fightObj[heroSelected].healthPoints);
+            jqueryString = "#" + enemySelected + ".swEnemyPlay";
+            $(jqueryString).find( "p").empty();
+            $(jqueryString).find( "p").text("HP: "+fightObj[enemySelected].healthPoints);
+            
+            
+        } else if ( cardSelected === "restartButton") {
+            // reset all values 
+
+            resetFightObj();
+            $("#gamePlay").hide();
+            $("#gameSelection").show();
+            gameSelectionPhase = true;
+            selectEnemyPhase = false;
+            playGamePhase = false;
+            fightPhase - false;
+        }
     }
 
     
 });
 
 
-// $(".swGameCard,#playAgainButton").on("click", function(){
-//     var cardSelected = this.id;
-//     console.log("Selected " + cardSelected);
-//     // run through all the game cards
-//         // turn off these buttons so can't click twice
-//         $(e).off("click"); 
-        
-        
 
-//     });
-//     // hide gameSelection as finished with it
-//     $("#gameSelection").hide();
-//     // now duplicate the remaining cards and attach them into the selectEnemy DIV
-//     var heroCard = $(this).clone();
-//     heroCard.addClass("swHero"); 
-//     $("#hero").append(heroCard);
-//     $("#selectEnemy").show(); // display
-//     // add the enemy cards
-//     $(".swGameCard").each( function(i, e){
-//         // console.log( $(e).attr("id"));
-//         if ( $(e).attr("id") !== cardSelected) {
-//             var enemyCard = $(e).clone();
-//             enemyCard.addClass("swEnemy");
-//             $("#enemies").append(enemyCard);
-//         }
-//     });
-    
-
-//     // now set up event for clicking enemy cards 
-//     $(".swEnemy").on("click", function() {
-//         var cardSelected = this.id;
-//         console.log("Enemy Selected " + cardSelected);
-//         // run through all the game cards
-//         $(".swGameCard").each( function(i, e){
-//             // console.log( $(e).attr("id"));
-//             if ( $(e).attr("id") !== cardSelected) {
-         
-//                 $(e).animate( {opacity:0.8}, "slow");
-//                 $(e).animate( {opacity:0.6}, "slow");
-//                 $(e).animate( {opacity:0.4}, "slow");
-//                 $(e).animate( {opacity:0.2}, "slow");
-//                 // doesn't seem to wait for animations to complete
-//             }
-//             // turn off these buttons so can't click twice
-//             $(e).off("click"); 
-//         } );
-//         $("#selectEnemy").hide(); // finished Enemy selection
-//         // set up fight cards
-//         var enemyCard = $(this).clone();
-//         enemyCard.addClass("enemyCard");
-//         enemyCard.stop();
-//         heroCard.stop();
-//         enemyCard.css( "opacity", 1);
-//         heroCard.css( "opacity", 1);
-
-//         // build fighting screen
-//         $("#heroColumn").append( heroCard);
-//         $("#enemyColumn").append( enemyCard)
-
-//         $("#gamePlay").show();
-        
-        
-//     });
-
-    
-    
-
-
-// });
 
 });
