@@ -114,12 +114,13 @@ $("button").on("click", function (){
         $("#selectEnemy").show(); // display
         // Now hide the cards other than the hero card
         $(".swHero").each( function(i, e){
-            if ( $(e).attr("id") !== cardSelected) {
-                $(e).hide();
-            }
-            else {
-                $(e).show();
-            }
+            // if ( $(e).attr("id") !== cardSelected) {
+            //     $(e).hide();
+            // }
+            // else {
+            //     $(e).show();
+            // }
+            $(e).hide();
         });
         $(".swEnemy").each( function(i, e){
             if ( $(e).attr("id") == cardSelected) {
@@ -140,23 +141,25 @@ $("button").on("click", function (){
         playGamePhase = true;
         $("#nextEnemyButton").hide();
         // in the hero column, hide the unselected
+        
         $(".swHeroPlay").each( function(i, e){
-            console.log( "Hero column " + typeof(e) + " " + e);
+            //console.log( "Hero column " + typeof(e) + " " + e);
             if ( $(e).attr("id") !== heroSelected) {
                $(e).hide();
             }
             else {
                 $(e).show();
             }
+            
        });
        // in the enemy column, show only the enemy
        $(".swEnemyPlay").each( function(i, e){
             if (( $(e).attr("id") === enemySelected) ) {
-                console.log("Enemies - show " + $(e).attr("id"));
+                // console.log("Enemies - show " + $(e).attr("id"));
                 $(e).show();
             }
             else {
-                console.log("Enemies - hide " + $(e).attr("id"));
+                // console.log("Enemies - hide " + $(e).attr("id"));
                 $(e).hide();
             }
         });
@@ -167,6 +170,25 @@ $("button").on("click", function (){
             selectEnemyPhase = true;
             $("#gamePlay").hide();
             $("#selectEnemy").show();
+            $("#fightText").text("");
+            $(".swHero").each( function(i, e){
+                // if ( $(e).attr("id") !== cardSelected) {
+                //     $(e).hide();
+                // }
+                // else {
+                //     $(e).show();
+                // }
+                $(e).hide();
+            });
+            $(".swEnemy").each( function(i, e){
+                if (( $(e).attr("id") == heroSelected) || ( enemiesDefeated.indexOf( $(e).attr("id")) > -1 )) {
+                    $(e).hide();
+                }
+                else {
+                    $(e).show();
+                }
+                
+            });
         }
         else if( cardSelected === "fightButton") {
             // hide the start again button and nextEnemy button
@@ -185,17 +207,18 @@ $("button").on("click", function (){
             if (fightObj[heroSelected].healthPoints < 0 ) {
                 // hero is defeated
                 gamesLost += 1;
-                $("#fightText").text( "You died !!  <br> Games won " + gamesWon + "<br> Games lost " + gamesLost);
+                $("#fightText").append( "You died !!  <br> Games won " + gamesWon + "<br> Games lost " + gamesLost);
                 $("#startAgainButton").show();
             }
             else if (fightObj[enemySelected].healthPoints < 0) {
-                // enemy defeated, move on to next one
+                // enemy defeated, move on to next one, or maybe all enemies defeated
                 $("#fightText").empty();
                 $("#fightText").text( "You defeated " + enemySelected + " !!");
                 enemiesDefeated.push( enemySelected);
                 // need to check to see whether all enemies have been beaten
                 if ( enemiesDefeated.length > 2) {
-                    $("#fightText").text( "You defeated all your enemies !! <br> Games won " + gamesWon + "<br> Games lost " + gamesLost);
+                    gamesWon ++;
+                    $("#fightText").append( "<br>You defeated all your enemies !! <br> Games won " + gamesWon + "<br> Games lost " + gamesLost);
                     $("#startAgainButton").show();
                     $("#nextEnemyButton").hide();
                 }
