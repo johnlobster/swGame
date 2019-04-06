@@ -51,6 +51,7 @@ var gamesLost = 0;
 
 var heroSelected = "";
 var enemySelected = "";
+var enemiesDefeated = []; // holds list of enemies already defeated
 
 
 // functions
@@ -148,13 +149,15 @@ $("button").on("click", function (){
                 $(e).show();
             }
        });
-       // in the enemy column, hide the unsselected
+       // in the enemy column, show only the enemy
        $(".swEnemyPlay").each( function(i, e){
-            if ( $(e).attr("id") !== enemySelected) {
-                $(e).hide();
+            if (( $(e).attr("id") === enemySelected) ) {
+                console.log("Enemies - show " + $(e).attr("id"));
+                $(e).show();
             }
             else {
-                $(e).show();
+                console.log("Enemies - hide " + $(e).attr("id"));
+                $(e).hide();
             }
         });
    
@@ -182,14 +185,23 @@ $("button").on("click", function (){
             if (fightObj[heroSelected].healthPoints < 0 ) {
                 // hero is defeated
                 gamesLost += 1;
-                $("#fightText").text( "You died !!");
+                $("#fightText").text( "You died !!  <br> Games won " + gamesWon + "<br> Games lost " + gamesLost);
                 $("#startAgainButton").show();
             }
             else if (fightObj[enemySelected].healthPoints < 0) {
                 // enemy defeated, move on to next one
                 $("#fightText").empty();
                 $("#fightText").text( "You defeated " + enemySelected + " !!");
-                $("#nextEnemyButton").show();
+                enemiesDefeated.push( enemySelected);
+                // need to check to see whether all enemies have been beaten
+                if ( enemiesDefeated.length > 2) {
+                    $("#fightText").text( "You defeated all your enemies !! <br> Games won " + gamesWon + "<br> Games lost " + gamesLost);
+                    $("#startAgainButton").show();
+                    $("#nextEnemyButton").hide();
+                }
+                else {
+                    $("#nextEnemyButton").show();
+                }
             }
             // update displays
             // hit points on cards
@@ -207,6 +219,7 @@ $("button").on("click", function (){
             resetFightObj();
             $("#gamePlay").hide();
             $("#gameSelection").show();
+            enemiesDefeated = [];
             gameSelectionPhase = true;
             selectEnemyPhase = false;
             playGamePhase = false;
