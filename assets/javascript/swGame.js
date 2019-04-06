@@ -1,6 +1,10 @@
 // Javascript to implement Star Wars Game
 // John Webster
 
+// The way this is built there are 3 screens. Instead of dynamically changing the
+// html, show() and hide() are used to hide and show the appropriate information
+// text values are dynamically changed
+
 $(document).ready(function(){
 
 // object containing data values for fighting
@@ -58,14 +62,24 @@ var enemiesDefeated = []; // holds list of enemies already defeated
 function resetFightObj () {
     for (var i in fightObj) {
          if (fightObj.hasOwnProperty(i)) {   
-            i.healthPoints = i.originalHealthPoints;
-            i.attackPower = i.originalAttackPower;
+             var targetObj = fightObj[i];
+            targetObj.healthPoints = targetObj.originalHealthPoints;
+            targetObj.attackPower = targetObj.originalAttackPower;
+            console.log( "reset " + i + " "+ targetObj.healthPoints);
+            // reset the hits on the cards
+            var jqueryString = "#" + i + ".swHeroPlay";
+            $(jqueryString).find( "p").text("HP: " + targetObj.healthPoints);
+            jqueryString = "#" + i + ".swEnemyPlay";
+            $(jqueryString).find( "p").text("HP: " + targetObj.healthPoints);
         }
     }
 }
-
-resetFightObj();
-
+// var jqueryString = "#" + heroSelected + ".swHeroPlay";
+//             $(jqueryString).find( "p").empty();
+//             $(jqueryString).find( "p").text("HP: "+fightObj[heroSelected].healthPoints);
+//             jqueryString = "#" + enemySelected + ".swEnemyPlay";
+//             $(jqueryString).find( "p").empty();
+//             $(jqueryString).find( "p").text("HP: "+fightObj[enemySelected].healthPoints);
 
 // copy the cards and insert into hidden parts of the html, rather than duplicating html by hand
 // add all into enemy and hero, will use visibility to select
@@ -84,6 +98,11 @@ $(".swGameCard").each( function(i, e){
     heroCard.addClass("swHeroPlay");
     $("#heroColumn").append(heroCard);
 });
+
+// don't reset before cards created
+resetFightObj();
+
+
 
 // event listener - look at all buttons, even if some not visible yet
 $("button").on("click", function (){
@@ -194,29 +213,32 @@ $("button").on("click", function (){
             // hide the start again button and nextEnemy button
             $("#startAgainButton").show();
             $("#nextEnemyButton").hide();
-            // fight calculations
-            fightObj[heroSelected].healthPoints -= fightObj[enemySelected].counterAttackPower;
-            fightObj[enemySelected].healthPoints -= fightObj[heroSelected].attackPower;
-            fightObj[heroSelected].attackPower += fightObj[heroSelected].attackPowerIncrementor;
+            // fight calculations. Dont fight if enemy already dead
+            if (fightObj[enemySelected].healthPoints > 0) {
+                fightObj[heroSelected].healthPoints -= fightObj[enemySelected].counterAttackPower;
+                fightObj[enemySelected].healthPoints -= fightObj[heroSelected].attackPower;
+                fightObj[heroSelected].attackPower += fightObj[heroSelected].attackPowerIncrementor;
+            }
             // update text
             $("#fightText").empty();
             $("#fightText").text( "You attacked " + enemySelected + " causing " + 
                 fightObj[heroSelected].attackPower+ " damage. "+ enemySelected + " attacked you causing " +
                 fightObj[enemySelected].counterAttackPower + " damage.");
             // determine win/lose
-            if (fightObj[heroSelected].healthPoints < 0 ) {
+            if (fightObj[heroSelected].healthPoints < 1 ) {
                 // hero is defeated
                 gamesLost += 1;
                 $("#fightText").append( "You died !!  <br> Games won " + gamesWon + "<br> Games lost " + gamesLost);
                 $("#startAgainButton").show();
             }
-            else if (fightObj[enemySelected].healthPoints < 0) {
+            else if (fightObj[enemySelected].healthPoints < 1) {
                 // enemy defeated, move on to next one, or maybe all enemies defeated
                 $("#fightText").empty();
                 $("#fightText").text( "You defeated " + enemySelected + " !!");
                 enemiesDefeated.push( enemySelected);
                 // need to check to see whether all enemies have been beaten
                 if ( enemiesDefeated.length > 2) {
+                    // All enemies defeated
                     gamesWon ++;
                     $("#fightText").append( "<br>You defeated all your enemies !! <br> Games won " + gamesWon + "<br> Games lost " + gamesLost);
                     $("#startAgainButton").show();
